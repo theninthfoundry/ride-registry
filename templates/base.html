@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} · Ride Registry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="{{ url_for('dashboard') }}" aria-label="Ride Registry home">
+        <span class="brand-mark"><span></span><span></span><span></span></span>
+        <span class="brand-name">ride<span>/</span>registry</span>
+      </a>
+      <div class="workspace-label">LOCAL NETWORK <span class="live-dot"></span></div>
+      <nav class="nav-links">
+        <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}"><span class="nav-icon">⌂</span><span>Overview</span><span class="nav-index">01</span></a>
+        <a class="nav-link {% if request.endpoint == 'ride_requests' %}active{% endif %}" href="{{ url_for('ride_requests') }}"><span class="nav-icon">↗</span><span>Ride requests</span><span class="nav-index">02</span></a>
+        <a class="nav-link {% if request.endpoint == 'drivers' %}active{% endif %}" href="{{ url_for('drivers') }}"><span class="nav-icon">◉</span><span>Driver fleet</span><span class="nav-index">03</span></a>
+        <a class="nav-link {% if request.endpoint == 'trips' %}active{% endif %}" href="{{ url_for('trips') }}"><span class="nav-icon">⇢</span><span>Trip registry</span><span class="nav-index">04</span></a>
+        <a class="nav-link {% if request.endpoint == 'routes' %}active{% endif %}" href="{{ url_for('routes') }}"><span class="nav-icon">⌖</span><span>Route nodes</span><span class="nav-index">05</span></a>
+        <a class="nav-link {% if request.endpoint == 'reviews' %}active{% endif %}" href="{{ url_for('reviews') }}"><span class="nav-icon">☆</span><span>Reviews</span><span class="nav-index">06</span></a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="node-card">
+          <div class="node-card-top"><span class="live-dot"></span> NODE STATUS</div>
+          <strong>Operational</strong>
+          <p>Local dispatch · MySQL registry</p>
+          <div class="node-line"><span></span></div>
+          <div class="node-card-foot"><span>HYD / IN</span><span>v1.0 DEMO</span></div>
+        </div>
+        <div class="sidebar-footnote">DBMS PROJECT<br>TERM 2026–27</div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="crumb"><span>NETWORK</span><span class="crumb-slash">/</span><strong>{{ title|upper }}</strong></div>
+        <div class="topbar-right"><span class="date-label">{{ today_label }}</span><span class="top-status"><span class="live-dot"></span> SYSTEM ONLINE</span></div>
+      </header>
+      <section class="page-wrap">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-stack">
+              {% for category, message in messages %}<div class="flash flash-{{ category }}"><span>{{ '✓' if category == 'success' else '!' }}</span>{{ message }}<button type="button" onclick="this.parentElement.remove()" aria-label="Dismiss">×</button></div>{% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+        <footer class="page-footer"><span>RIDE / REGISTRY</span><span>LOCAL FIRST. ROUTE SMARTER.</span><span>BUILD 001 — DBMS PBL</span></footer>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

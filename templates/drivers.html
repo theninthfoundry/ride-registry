@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading compact-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> FLEET / ELIGIBILITY</div><h1>Driver <em>fleet.</em></h1><p class="heading-copy">Every driver is tied to a vehicle, local dispatch zone, and verified documents. No shortcuts into matching.</p></div><div class="heading-count"><strong>{{ fleet|length }}</strong><span>REGISTERED<br>DRIVERS</span></div></div>
+<div class="section-grid form-content-grid">
+  <section class="panel form-panel"><div class="panel-heading"><div><div class="eyebrow">NEW ENTRY</div><h2>Add a driver</h2></div><span class="panel-step">01 / 02</span></div>
+    <form method="post" class="form-grid">
+      <label class="field field-full"><span>DRIVER NAME</span><input name="full_name" placeholder="e.g. Neel Sharma" required></label>
+      <label class="field"><span>PHONE</span><input name="phone" placeholder="10-digit number" required></label>
+      <label class="field"><span>VEHICLE TYPE</span><select name="vehicle_type" required><option value="BIKE">Bike</option><option value="AUTO">Auto</option><option value="CAB">Cab</option></select></label>
+      <label class="field field-full"><span>CURRENT ROUTE NODE</span><select name="current_node_id" required><option value="">Select a node</option>{% for node in nodes %}<option value="{{ node.route_node_id }}">{{ node.node_name }}</option>{% endfor %}</select></label>
+      <label class="field"><span>REGISTRATION PLATE</span><input name="registration_no" placeholder="TS09-AB-1234" required></label>
+      <label class="field"><span>MAKE / MODEL</span><input name="make_model" placeholder="Honda Activa" required></label>
+      <div class="field field-full form-divider"><span>DOCUMENT RECORDS <small>Both begin as pending.</small></span></div>
+      <label class="field"><span>REGISTRATION DOC NO.</span><input name="registration_doc" placeholder="RC reference" required></label>
+      <label class="field"><span>INSURANCE DOC NO.</span><input name="insurance_doc" placeholder="Policy reference" required></label>
+      <div class="field field-full"><button class="button button-dark button-full" type="submit">Save driver record <span>↗</span></button></div>
+    </form>
+  </section>
+  <section class="panel fleet-panel"><div class="panel-heading"><div><div class="eyebrow">ACTIVE REGISTRY</div><h2>Fleet directory</h2></div><span class="count-pill">{{ fleet|length }} RECORDS</span></div>
+    <div class="fleet-list">{% for driver in fleet %}<article class="fleet-card"><div class="fleet-avatar">{{ driver.full_name[:1]|upper }}</div><div class="fleet-main"><div class="fleet-title"><strong>{{ driver.full_name }}</strong><span class="status status-{{ driver.driver_status|lower|replace('_','-') }}">{{ driver.driver_status|replace('_',' ') }}</span></div><div class="fleet-meta">{{ driver.vehicle_type }} <span>·</span> {{ driver.make_model }} <span>·</span> {{ driver.registration_no }}</div><div class="fleet-sub">⌖ {{ driver.current_node }} <span>/</span> {{ driver.dispatch_name }}</div><div class="doc-row"><span class="doc-tag {% if driver.registration_ok %}doc-good{% else %}doc-pending{% endif %}"><i></i> RC {% if driver.registration_ok %}VERIFIED{% else %}PENDING{% endif %}</span><span class="doc-tag {% if driver.insurance_ok %}doc-good{% else %}doc-pending{% endif %}"><i></i> INSURANCE {% if driver.insurance_ok %}VERIFIED{% else %}PENDING{% endif %}</span></div></div><div class="fleet-actions">{% if not (driver.registration_ok and driver.insurance_ok) %}<form method="post" action="{{ url_for('verify_documents', driver_id=driver.driver_id) }}"><button class="mini-button" type="submit">Verify docs ↗</button></form>{% else %}<span class="verified-mark">✓ READY</span>{% endif %}</div></article>{% else %}<div class="empty-compact"><p>No drivers yet.</p></div>{% endfor %}</div>
+    <div class="note-box"><span>i</span><p><strong>Eligibility rule</strong><br>A driver can be matched only when available, in an active dispatch zone, assigned to an active vehicle, and backed by verified, unexpired registration and insurance records.</p></div>
+  </section>
+</div>
+{% endblock %}

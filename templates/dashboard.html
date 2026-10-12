@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading heading-with-graphic">
+  <div><div class="eyebrow"><span class="eyebrow-line"></span> DISPATCH INTELLIGENCE / 001</div><h1>Move people.<br><em>Not complexity.</em></h1><p class="heading-copy">One clean registry for local drivers, on-demand rides, smart fares, and every trip in between.</p></div>
+  <div class="route-art" aria-label="Abstract route map illustration"><div class="route-art-grid"></div><svg viewBox="0 0 300 190" role="img" aria-hidden="true"><path d="M15 145 C58 150 42 87 93 91 S137 125 153 72 S220 52 279 24"/><path d="M28 32 C85 44 70 127 124 143 S194 124 273 163" class="route-secondary"/><circle cx="15" cy="145" r="5"/><circle cx="93" cy="91" r="5"/><circle cx="153" cy="72" r="5"/><circle cx="279" cy="24" r="5"/><circle cx="124" cy="143" r="4" class="node-secondary"/><circle cx="273" cy="163" r="4" class="node-secondary"/></svg><div class="art-tag tag-top">ROUTE / 01</div><div class="art-tag tag-bottom">HYDERABAD, IN</div></div>
+</div>
+
+<div class="metrics-grid">
+  <article class="metric-card metric-dark"><div class="metric-top"><span>Eligible drivers</span><span class="metric-symbol">↗</span></div><div class="metric-value">{{ summary.eligible_fleet or 0 }}<small> / fleet</small></div><div class="metric-foot"><span class="metric-dot"></span> Verified + available</div><div class="metric-decoration">01</div></article>
+  <article class="metric-card"><div class="metric-top"><span>Pending requests</span><span class="metric-icon">⇢</span></div><div class="metric-value">{{ '%02d'|format(summary.pending_requests or 0) }}</div><div class="metric-foot">Waiting for a match</div><div class="metric-decoration">02</div></article>
+  <article class="metric-card"><div class="metric-top"><span>Completed trips</span><span class="metric-icon">✓</span></div><div class="metric-value">{{ '%02d'|format(summary.completed_trips or 0) }}</div><div class="metric-foot">In the permanent registry</div><div class="metric-decoration">03</div></article>
+  <article class="metric-card metric-accent"><div class="metric-top"><span>Fare value</span><span class="metric-icon">₹</span></div><div class="metric-value"><small>₹</small>{{ '%.0f'|format(summary.total_fares or 0) }}</div><div class="metric-foot">Completed trips only</div><div class="metric-decoration">04</div></article>
+</div>
+
+<div class="section-grid dashboard-grid">
+  <section class="panel panel-wide">
+    <div class="panel-heading"><div><div class="eyebrow">LIVE REGISTRY</div><h2>Recent trips</h2></div><a class="text-link" href="{{ url_for('trips') }}">View registry <span>↗</span></a></div>
+    {% if recent %}
+    <div class="table-wrap"><table><thead><tr><th>TRIP</th><th>PASSENGER / DRIVER</th><th>ROUTE</th><th>STATE</th><th>FARE</th></tr></thead><tbody>
+      {% for trip in recent %}<tr><td><span class="id-code">TR-{{ '%04d'|format(trip.trip_id) }}</span><small class="sub-cell">{{ trip.vehicle_type }}</small></td><td><strong>{{ trip.passenger_name }}</strong><small class="sub-cell">with {{ trip.driver_name }}</small></td><td><span class="route-cell">{{ trip.pickup_name }} <span>→</span> {{ trip.drop_name }}</span><small class="sub-cell">{{ trip.dispatch_name }}</small></td><td><span class="status status-{{ trip.trip_status|lower|replace('_','-') }}">{{ trip.trip_status|replace('_',' ') }}</span></td><td class="fare-cell">₹{{ '%.2f'|format(trip.total_fare) }}</td></tr>{% endfor %}
+    </tbody></table></div>
+    {% else %}<div class="empty-state"><div class="empty-icon">↗</div><h3>No trips registered yet</h3><p>Create a ride request, then run a match to generate the first trip.</p><a class="button button-dark" href="{{ url_for('ride_requests') }}">Create a ride request <span>↗</span></a></div>{% endif %}
+  </section>
+  <section class="panel demand-panel">
+    <div class="panel-heading"><div><div class="eyebrow">LOCAL SUPPLY / DEMAND</div><h2>Dispatch pulse</h2></div><span class="live-chip"><span class="live-dot"></span> LIVE</span></div>
+    {% if demand %}<div class="demand-list">{% for item in demand %}<div class="demand-item"><div class="demand-index">0{{ loop.index }}</div><div class="demand-info"><strong>{{ item.zone_name }}</strong><span>{{ item.vehicle_type }} requests</span></div><div class="demand-count">{{ item.request_count }}</div></div>{% endfor %}</div>{% else %}<div class="empty-compact"><span>◎</span><p>No active demand.<br>Every local node is quiet.</p></div>{% endif %}
+    <div class="logic-note"><span class="logic-note-mark">↗</span><div><strong>Match logic</strong><p>Eligible documents first. Local zone second. Demand-to-driver ratio sets surge.</p></div></div>
+  </section>
+</div>
+<div class="bottom-banner"><div class="banner-symbol">✳</div><div><strong>A small network. A clear record.</strong><p>Each assignment, fare, route, and review is written back to the registry.</p></div><a href="{{ url_for('ride_requests') }}" class="button button-light">Open dispatch <span>↗</span></a></div>
+{% endblock %}
